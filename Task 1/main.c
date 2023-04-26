@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <xc.h>
+#include <math.h>
 
 #include "app.h"
 
@@ -20,7 +21,6 @@ void Update_LCD ( void ) ;
 void SYS_Initialize ( void ) ;
 extern void ConvertADCVoltage ( unsigned int  ) ;
 extern void Hex2Dec ( unsigned char ) ;
-
 
 APP_DATA appData = {
                     .messageLine1 = "Explorer 16 Demo" ,
@@ -58,6 +58,13 @@ int bcd(int value) {
     return ((value/10) << 4 | (value%10));
 }
 
+int generator() {
+    srand(TMR1);
+    int config = 115;
+    double x = (double)rand() / RAND_MAX;
+    return (int)(sin(2 * M_PI * x) * 32 + 32) % config;
+}
+
 void change_subfunction(int* selected_subfunction) {
     if (BUTTON_IsPressed( BUTTON_S3 )) {
         (*selected_subfunction) += 1;
@@ -81,8 +88,7 @@ int main ( void )
     ADC_SetConfiguration ( ADC_CONFIGURATION_AUTO_SAMPLE_CONVERT ) ;
     
     unsigned char display = 0;
-    int selected_subfunction = 9;
-    unsigned long seed = 123456789;
+    int selected_subfunction = 1;
 
     while ( 1 )
     {
@@ -233,36 +239,11 @@ int main ( void )
         }
         
         // Random number generator
-        int config = 115;
-        int result = 1;
-        int xor_value = 0;
-        int first_comparison = 1;
-        int current_bit_index = 7;
-
         while (selected_subfunction == 9) {
             delay(250);
-            while (current_bit_index >= 0) {
-                if (((config >> current_bit_index) & 1) == 1) {
-                    if (first_comparison == 1) {
-                        xor_value = ((result >> current_bit_index) & 1);
-                        first_comparison = 0;
-                    } else {
-                        xor_value ^= ((result >> current_bit_index) & 1);
-                    }
-                }
-                current_bit_index--;
-            }
-
-            xor_value <<= 5;
-            result >>= 1;
-            result |= xor_value;
-            LATA = result;
-            
-            first_comparison = 1;
-            xor_value = 0;
-            current_bit_index = 7;
+            LATA = generator();
         }
-        
+
     }
     
 }

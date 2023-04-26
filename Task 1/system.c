@@ -1,3 +1,40 @@
+/*******************************************************************************
+ System Initialization File
+  File Name:
+    sys_init.c
+  Summary:
+    System Initialization.
+  Description:
+    This file contains source code necessary to initialize the system.
+ *******************************************************************************/
+
+// DOM-IGNORE-BEGIN
+/*******************************************************************************
+Copyright (c) 2013 released Microchip Technology Inc.  All rights reserved.
+Microchip licenses to you the right to use, modify, copy and distribute
+Software only when embedded on a Microchip microcontroller or digital signal
+controller that is integrated into your product or third party product
+(pursuant to the sublicense terms in the accompanying license agreement).
+You should refer to the license agreement accompanying this Software for
+additional information regarding your rights and obligations.
+SOFTWARE AND DOCUMENTATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
+EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
+MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
+IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
+CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
+OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
+INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
+CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
+SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
+(INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
+ *******************************************************************************/
+// DOM-IGNORE-END
+
+// ****************************************************************************
+// ****************************************************************************
+// Section: Configuration Bits
+// ****************************************************************************
+// ****************************************************************************
 #include <xc.h>
 #include "app.h"
 
@@ -75,19 +112,24 @@ void __attribute__ ( ( __interrupt__ , auto_psv ) ) _AltMathError ( void ) ;
 void SYS_Initialize ( void )
 {
     /* Enable LEDs*/
-//    LED_Enable ( LED_D9 ) ;
-//    LED_Enable ( LED_D10 ) ;
+    LED_Enable ( LED_D3 ) ;
+    LED_Enable ( LED_D4 ) ;
+    LED_Enable ( LED_D5 ) ;
+    LED_Enable ( LED_D6 ) ;
+    LED_Enable ( LED_D7 ) ;
+    LED_Enable ( LED_D8 ) ;
+    LED_Enable ( LED_D9 ) ;
+    LED_Enable ( LED_D10 ) ;
 
     /* Turn On LEDs*/
-//    LED_On ( LED_D9 ) ;
-//    LED_On ( LED_D10 ) ;
+
 
     /* Enable Switch S3*/
     BUTTON_Enable ( BUTTON_S3 ) ;
 
     /* Enable ADC to the Potentiometer channel */ 
      
-    ADC_ChannelEnable ( ADC_CHANNEL_POTENTIOMETER ) ;
+    ADC_ChannelEnable ( ADC_CHANNEL_TEMPERATURE_SENSOR ) ;
 
 
     /* Initialize LCD*/
@@ -139,9 +181,9 @@ void SOSC_Configuration ( void )
 
 void __attribute__ ( ( __interrupt__ , auto_psv ) ) _ADC1Interrupt ( void )
 {
-    static int count = 0 ;
-
-    /* Simple "I am here" indicator */
+//    static int count = 0 ;
+//
+//    /* Simple "I am here" indicator */
 //    if ( count++ == 2000 )
 //    {
 //        LED_Toggle ( LED_D9 ) ;
