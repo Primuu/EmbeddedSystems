@@ -20,6 +20,7 @@ void Update_LCD ( void ) ;
 void SYS_Initialize ( void ) ;
 extern void ConvertADCVoltage ( unsigned int  ) ;
 extern void Hex2Dec ( unsigned char ) ;
+void Update_TIME (int, int) ;
 
 
 APP_DATA appData = {
@@ -85,7 +86,8 @@ int main ( void )
     /* Infinite Loop */
     while ( 1 )
     {
-
+        
+        ConvertADCVoltage ( appData.temp1 ) ;
         float percent = (appData.adones - '0') + (appData.adtens - '0') * 0.1f + (appData.adhunds - '0') * 0.01f;
         percent = percent * 100 / 3.30f;
 
@@ -96,13 +98,13 @@ int main ( void )
             LCD_PutString ( (char*) &appData.message4[0] , sizeof (appData.message4 ) - 1  ) ;
           }
 
-          if(percent => 33 && percent < 67) {
+          if(percent >= 33 && percent < 67) {
             time = 180;
             LCD_PutString ( (char*) &appData.message1Line1[0] , sizeof (appData.message1Line1 ) - 1  ) ;
             LCD_PutString ( (char*) &appData.message3[0] , sizeof (appData.message3 ) - 1  ) ;
           }
 
-          if(percent => 67) {
+          if(percent >= 67) {
             time = 300;
             LCD_PutString ( (char*) &appData.message1Line1[0] , sizeof (appData.message1Line1 ) - 1  ) ;
             LCD_PutString ( (char*) &appData.message2[0] , sizeof (appData.message2 ) - 1  ) ;
@@ -174,7 +176,7 @@ int main ( void )
               player2Turn = 0;
           }
 
-          if(secondsLeft2 == 0){
+          else if(secondsLeft2 == 0){
               LCD_PutString ( (char*) &appData.messagePlayer2TimeEndLine1[0] , sizeof (appData.messagePlayer2TimeEndLine1 ) - 1  ) ;
               LCD_PutString ( (char*) &appData.messagePlayerTimeEndLine2[0] , sizeof (appData.messagePlayerTimeEndLine2 ) - 1  ) ;
               delay1s();
@@ -246,4 +248,78 @@ void Update_TIME (int secondsLeft1, int secondsLeft2)
     LCD_PutChar(tensSecondsPlayer2 + '0');
     LCD_PutChar(onesSecondsPlayer2 + '0');
 
+}
+
+void ConvertADCVoltage ( unsigned int adc_conv_data )
+{
+    /* reset values */
+    appData.adones = 0 ;
+    appData.adtens = 0 ;
+    appData.adhunds = 0 ;
+    appData.adthous = 0 ;
+
+    while ( adc_conv_data > 0 )
+    {
+        /* test for 1 volt or greater */
+        if ( adc_conv_data > ( ONE_VOLT - 1 ) )
+        {
+            /* increment 1 volt counter */
+            appData.adones++ ;
+
+            /* subtract 1 volt */
+            adc_conv_data -= ONE_VOLT ;
+        }
+
+
+            /* test for 0.1 volt */
+        else if ( adc_conv_data > ( ONE_TENTH_VOLT - 1 ) )
+        {
+            /* increment tenths */
+            if ( appData.adtens < 9 )
+            {
+                appData.adtens++ ;
+            }
+            else
+            {
+                /* tenths has rolled over */
+                appData.adones++ ;
+
+                /* so increment ones and reset tenths */
+                appData.adtens = 0 ;
+            }
+
+            adc_conv_data -= ONE_TENTH_VOLT ;
+        }
+
+            /* test for 0.01 volt */
+        else if ( adc_conv_data > ( ONE_HUNDREDTH_VOLT - 1 ) )
+        {
+            /* increment hundredths */
+            if ( appData.adhunds < 9 )
+            {
+                appData.adhunds++ ;
+            }
+            else
+            {
+                /* hundredths has rolled over */
+                appData.adtens++ ;
+
+                /* so increment tenths and reset hundredths */
+                appData.adhunds = 0 ;
+            }
+
+            adc_conv_data -= ONE_HUNDREDTH_VOLT ;
+        }
+
+        else if ( adc_conv_data <= ( ONE_HUNDREDTH_VOLT - 1 ) )
+        {
+            appData.adthous++ ;
+            adc_conv_data -- ;
+        }
+    }
+
+    appData.adones += 0x30 ;
+    appData.adtens += 0x30 ;
+    appData.adhunds += 0x30 ;
+    appData.adthous += 0x30 ;
 }
