@@ -16,7 +16,7 @@
 // *****************************************************************************
 
 
-void Update_LCD ( void ) ;
+void Update_POWER_TIME (int, int) ;
 void SYS_Initialize ( void ) ;
 extern void ConvertADCVoltage ( unsigned int  ) ;
 extern void Hex2Dec ( unsigned char ) ;
@@ -92,18 +92,19 @@ int main ( void )
         }
 
         // Start/Stop - button may not work
+        // Comment LED_Enable ( LED_D10 ) ;
         if (BUTTON_IsPressed( BUTTON_S5 )) {
           if (working == 0) {
             working = 1;
           }
-          if (working == 1) {
+          else if (working == 1) {
             working = 0;
           }
           delay1s();
         }
 
         // Reset
-        if (BUTTON_IsPressed( BUTTON_4 )) {
+        if (BUTTON_IsPressed( BUTTON_S4 )) {
           powerState = 0;
           secondsLeft = 0;
           Update_POWER_TIME (powerState, secondsLeft);
@@ -111,8 +112,10 @@ int main ( void )
         }
 
         if (working == 1) {
-          Update_POWER_TIME (powerState, secondsLeft);
-          secondsLeft = secondsLeft - 1;
+            if (secondsLeft > 0) {
+                secondsLeft = secondsLeft - 1;
+                Update_POWER_TIME (powerState, secondsLeft);
+            }
           if (secondsLeft == 0) {
             working = 0;
           }
