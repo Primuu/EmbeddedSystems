@@ -1,2 +1,2 @@
 # EmbeddedSystems
- Repository created for needs of 'Systemy Wbuodwane' subject 
+ Repository created for needs of 'Systemy Wbudowane' subject 
